@@ -1,0 +1,22 @@
+# Terraform 状態ファイル
+*.tfstate
+*.tfstate.*
+
+# Terraform のバックアップファイル
+*.backup
+
+# .terraform ディレクトリ（Terraform プラグインやキャッシュ）
+.terraform/
+
+# Terraform の計画ファイル
+*.tfplan
+
+# 機密情報を含む可能性のあるファイル
+*.tfvars
+*.tfvars.json
+
+# ログファイル
+crash.log
+
+# その他の一時ファイル
+.terraform.lock.hcl
