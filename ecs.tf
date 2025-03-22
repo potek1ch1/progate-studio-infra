@@ -1,4 +1,5 @@
 
+// ECSクラスター
 resource "aws_ecs_cluster" "progate_ecs_cluster" {
   name = "progate-ecs-cluster"
 
@@ -7,6 +8,7 @@ resource "aws_ecs_cluster" "progate_ecs_cluster" {
   }
 }
 
+// ECSタスク定義
 resource "aws_ecs_task_definition" "progate_td" {
   family                   = "progete-ecs-task"
   cpu                      = "256"
@@ -17,7 +19,7 @@ resource "aws_ecs_task_definition" "progate_td" {
   container_definitions = jsonencode([
     {
       name      = "progate-container"
-      image     = "koheiota0811/aws-progate:latest"
+      image     = "koheiota0811/aws-progate"
       cpu       = 256
       memory    = 512
       essential = true
@@ -30,14 +32,22 @@ resource "aws_ecs_task_definition" "progate_td" {
       ]
       environment = [
         {
-          name: "BASE_URL"
-          value: "https://phantom-frame.potekichi.net"
+          name : "BASE_URL"
+          value : "https://phantom-frame.potekichi.net"
         },
         {
-          name: "NEXT_PUBLIC_APP_URL"
-          value: "https://phantom-frame.potekichi.net"
+          name : "NEXT_PUBLIC_APP_URL"
+          value : "https://phantom-frame.potekichi.net"
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_log_group.name
+          awslogs-region        = var.region
+          awslogs-stream-prefix = "ecs"
+        }
+      }
     }
   ])
 
@@ -46,6 +56,7 @@ resource "aws_ecs_task_definition" "progate_td" {
   }
 }
 
+// ECSサービス
 resource "aws_ecs_service" "progate_service" {
   name            = "progate-service"
   cluster         = aws_ecs_cluster.progate_ecs_cluster.id
@@ -68,6 +79,32 @@ resource "aws_ecs_service" "progate_service" {
   tags = {
     Name = "ProgateService"
   }
+}
+
+
+// ECSタスク実行ロール
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecsTaskExecutionRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+
+// ECSタスク実行ロールポリシーアタッチメント
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 

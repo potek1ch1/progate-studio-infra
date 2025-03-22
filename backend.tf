@@ -1,15 +1,15 @@
 terraform {
   backend "s3" {
-    bucket = "my-terraform-tfstate-bucket-20250321"       # 使用するS3バケット名
-    key    = "terraform/terraform.tfstate"  # S3内で保存するファイルのパス
-    region = "us-west-2"            # バケットのリージョン
-    encrypt = true                           # 状態ファイルを暗号化
+    bucket  = "my-terraform-tfstate-bucket-20250321" # 使用するS3バケット名
+    key     = "terraform/terraform.tfstate"          # S3内で保存するファイルのパス
+    region  = "us-west-2"                            # バケットのリージョン
+    encrypt = true                                   # 状態ファイルを暗号化
   }
 }
 
 # S3バケット
 resource "aws_s3_bucket" "tfstate" {
-  bucket = "my-terraform-tfstate-bucket-20250321"  # 一意な名前を使うこと
+  bucket = "my-terraform-tfstate-bucket-20250321" # 一意な名前を使うこと
   # lifecycle {
   #   prevent_destroy = true
   # }
@@ -20,11 +20,11 @@ resource "aws_s3_bucket" "tfstate" {
 }
 
 resource "aws_s3_bucket_versioning" "tfstate_versioning" {
-    bucket = aws_s3_bucket.tfstate.bucket
+  bucket = aws_s3_bucket.tfstate.bucket
 
-    versioning_configuration {
-      status = "Enabled"
-    }
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "tfstate_public_access_block" {
