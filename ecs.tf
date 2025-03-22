@@ -17,15 +17,25 @@ resource "aws_ecs_task_definition" "progate_td" {
   container_definitions = jsonencode([
     {
       name      = "progate-container"
-      image     = "nginx:latest"
+      image     = "koheiota0811/aws-progate:latest"
       cpu       = 256
       memory    = 512
       essential = true
       portMappings = [
         {
-          containerPort = 80
-          hostPort      = 80
+          containerPort = 3000
+          hostPort      = 3000
           protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name: "BASE_URL"
+          value: "https://phantom-frame.potekichi.net"
+        },
+        {
+          name: "NEXT_PUBLIC_APP_URL"
+          value: "https://phantom-frame.potekichi.net"
         }
       ]
     }
@@ -52,7 +62,7 @@ resource "aws_ecs_service" "progate_service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.progate_tg.arn
     container_name   = "progate-container"
-    container_port   = 80
+    container_port   = 3000
   }
 
   tags = {

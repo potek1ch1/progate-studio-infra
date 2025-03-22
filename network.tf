@@ -66,7 +66,7 @@ resource "aws_lb" "progate_alb" {
 
 resource "aws_lb_target_group" "progate_tg" {
   name        = "progate-tg"
-  port        = 80
+  port        = 3000
   protocol    = "HTTP"
   vpc_id      = aws_vpc.progate_vpc.id
   target_type = "ip" # Fargate タスクの場合は "ip" を指定
