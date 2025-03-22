@@ -84,6 +84,20 @@ resource "aws_lb_target_group" "progate_tg" {
   }
 }
 
+resource "aws_lb_listener" "progate_https_listener" {
+  load_balancer_arn = aws_lb.progate_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+
+  ssl_policy        = "ELBSecurityPolicy-2016-08" # 必要に応じてセキュリティポリシーを変更
+  certificate_arn   = var.acm_certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.progate_tg.arn
+  }
+}
+
 resource "aws_lb_listener" "progate_listener" {
   load_balancer_arn = aws_lb.progate_alb.arn
   port              = 80
@@ -106,6 +120,20 @@ resource "aws_security_group" "progate_lb_sg" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # 全てのIPからのHTTPアクセスを許可
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"] # 全てのIPへの通信を許可
+  }
+
+    ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # 全てのIPからのHTTPSアクセスを許可
   }
 
   egress {
