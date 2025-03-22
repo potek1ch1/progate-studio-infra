@@ -89,8 +89,8 @@ resource "aws_lb_listener" "progate_https_listener" {
   port              = 443
   protocol          = "HTTPS"
 
-  ssl_policy        = "ELBSecurityPolicy-2016-08" # 必要に応じてセキュリティポリシーを変更
-  certificate_arn   = var.acm_certificate_arn
+  ssl_policy      = "ELBSecurityPolicy-2016-08" # 必要に応じてセキュリティポリシーを変更
+  certificate_arn = var.acm_certificate_arn
 
   default_action {
     type             = "forward"
@@ -129,18 +129,11 @@ resource "aws_security_group" "progate_lb_sg" {
     cidr_blocks = ["0.0.0.0/0"] # 全てのIPへの通信を許可
   }
 
-    ingress {
+  ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # 全てのIPからのHTTPSアクセスを許可
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"] # 全てのIPへの通信を許可
   }
 
   tags = {
@@ -155,8 +148,8 @@ resource "aws_security_group" "progate_ecs_sg" {
 
   # ALB からのトラフィックを許可
   ingress {
-    from_port       = 80
-    to_port         = 80
+    from_port       = 3000
+    to_port         = 3000
     protocol        = "tcp"
     security_groups = [aws_security_group.progate_lb_sg.id] # ALB のセキュリティグループからのトラフィックを許可
   }

@@ -3,7 +3,7 @@ variable "region" {
 }
 
 variable "desired_count" {
-  default = 1
+  default = 2
 }
 
 variable "lounch_type" {
