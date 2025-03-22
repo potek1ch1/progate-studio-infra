@@ -11,6 +11,7 @@ terraform {
 
 provider "aws" {
   region = var.region
+  profile = "progate-hackathon-2025-03"
 }
 
 
