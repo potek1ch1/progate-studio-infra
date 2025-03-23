@@ -58,11 +58,18 @@ resource "aws_lb" "progate_alb" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.progate_lb_sg.id]
   subnets            = [aws_subnet.progate_subnet_a.id, aws_subnet.progate_subnet_b.id] # 必要に応じて複数サブネットを指定
-
+  access_logs {
+    bucket  = aws_s3_bucket.alb_logs.bucket
+    prefix  = "logs"
+    enabled = true
+  }
   tags = {
     Name = "ProgateALB"
   }
 }
+
+
+
 
 resource "aws_lb_target_group" "progate_tg" {
   name        = "progate-tg"
