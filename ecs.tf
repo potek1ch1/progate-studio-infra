@@ -19,7 +19,7 @@ resource "aws_ecs_task_definition" "progate_td" {
   container_definitions = jsonencode([
     {
       name      = "progate-container"
-      image     = "koheiota0811/aws-progate"
+      image     = "koheiota0811/aws-progate:rebuild-2"
       cpu       = 256
       memory    = 512
       essential = true
